@@ -1,0 +1,19 @@
+{
+  "name": "mern-ecommerce-search-benchmark-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Strict MERN e-commerce search benchmark dashboard for MongoDB indexing and execution plan analysis.",
+  "scripts": {
+    "dev": "concurrently \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
+    "install:all": "npm install --prefix backend && npm install --prefix frontend",
+    "build": "npm --prefix frontend run build",
+    "seed": "npm --prefix backend run seed",
+    "clear": "npm --prefix backend run clear",
+    "benchmark": "npm --prefix backend run benchmark",
+    "index:create": "npm --prefix backend run index:create",
+    "index:drop": "npm --prefix backend run index:drop"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
