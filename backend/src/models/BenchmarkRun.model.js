@@ -9,6 +9,8 @@ const benchmarkRunSchema = new mongoose.Schema(
     strategyName: String,
     mode: String,
     iterations: Number,
+    forcedNoIndex: Boolean,
+    forcedHint: Object,
     avgExecutionTimeMillis: Number,
     minExecutionTimeMillis: Number,
     maxExecutionTimeMillis: Number,

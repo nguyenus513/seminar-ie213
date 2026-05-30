@@ -1,12 +1,13 @@
 const { getModelByCollection } = require("./collection.service");
 const { extractExplainStats } = require("../utils/extractExplainStats");
 
-async function explainQuery({ collection, filter = {}, sort = null, limit = 500, skip = 0, projection = null }) {
+async function explainQuery({ collection, filter = {}, sort = null, limit = 500, skip = 0, projection = null, hint = null }) {
   const model = getModelByCollection(collection);
   let cursor = model.collection.find(filter, projection ? { projection } : undefined);
   if (sort) cursor = cursor.sort(sort);
   if (skip) cursor = cursor.skip(Number(skip));
   if (limit) cursor = cursor.limit(Number(limit));
+  if (hint) cursor = cursor.hint(hint);
   const explain = await cursor.explain("executionStats");
   return extractExplainStats(explain);
 }
