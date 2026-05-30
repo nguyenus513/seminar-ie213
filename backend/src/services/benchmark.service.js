@@ -8,6 +8,11 @@ function hasTextSearch(filter = {}) {
   return Boolean(filter.$text);
 }
 
+function calculateFasterRatio(baselineMillis = 0, optimizedMillis = 0) {
+  if (optimizedMillis === 0) return baselineMillis > 0 ? null : 0;
+  return Number((baselineMillis / optimizedMillis).toFixed(2));
+}
+
 async function resolveBenchmarkStrategy({ queryConfig, strategyKey }) {
   const strategy = INDEX_STRATEGIES[strategyKey];
   const usesTextSearch = hasTextSearch(queryConfig.filter);
@@ -99,7 +104,7 @@ async function compareLatest() {
     const baseline = await BenchmarkRun.findOne({ queryKey, indexStrategy: "NO_INDEX" }).sort({ createdAt: -1 }).lean();
     const optimized = await BenchmarkRun.findOne({ queryKey, indexStrategy: recommendedStrategy }).sort({ createdAt: -1 }).lean();
     if (baseline && optimized) {
-      const fasterRatio = optimized.avgExecutionTimeMillis > 0 ? baseline.avgExecutionTimeMillis / optimized.avgExecutionTimeMillis : 0;
+      const fasterRatio = calculateFasterRatio(baseline.avgExecutionTimeMillis, optimized.avgExecutionTimeMillis);
       const docsReductionPercent = baseline.avgDocsExamined > 0 ? (1 - optimized.avgDocsExamined / baseline.avgDocsExamined) * 100 : 0;
       comparisons.push({
         queryKey,
@@ -107,7 +112,8 @@ async function compareLatest() {
         baseline,
         optimized,
         improvement: {
-          fasterRatio: Number(fasterRatio.toFixed(2)),
+          fasterRatio,
+          fasterRatioLabel: fasterRatio === null ? "∞x" : `${fasterRatio}x`,
           docsReductionPercent: Number(docsReductionPercent.toFixed(2))
         }
       });
